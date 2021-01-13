@@ -1,41 +1,48 @@
 #include <cstdio>
 #include <vector>
 #include <set>
+#include <utility>
+#include <queue>
 using namespace std;
 
-void print(vector<vector<int> > v);
-int get_next_v(const vector<int> &answer, const set<int> &s);
+void print(const vector<vector<pair<int, char> > > &v);
+
+struct compare{
+	bool operator()(const pair<int, int> &a, const pair<int, int> &b) {
+		return a.second > b.second;
+	}
+};
 
 int main() {
 	int v, e, start;
 	scanf("%d%d%d", &v, &e, &start);
-	vector<vector<char> > g(v + 1, vector<char>(v + 1, 0)); // 인접 리스트로 수정해야 함 
+	vector<vector<pair<int, char> > > g(v + 1);
 	vector<int> answer(v + 1, 987654321);
 	vector<bool> visited(v + 1, false);
-	set<int> s;
+	priority_queue<pair<int, int>, vector<pair<int, int> >, compare> q;
 
 	for (int i = 0; i < e; ++i) {
 		int se, ee, l;
 		scanf("%d%d%d", &se, &ee, &l);
-		g[se][ee] = l;
+		g[se].push_back(make_pair(ee, l));
 	}
 	//print(g);
 
-	s.insert(start);
-	visited[start] = true;
+	q.push(make_pair(start, 0));
 	answer[start] = 0;
-	while (!s.empty()) {
-		int cur_v = get_next_v(answer, s);
-		s.erase(cur_v);
+	while (!q.empty()) {
+		int cur_v = q.top().first;
+		q.pop();
+		if (visited[cur_v]) {
+			continue;
+		} else {
+			visited[cur_v] = true;
+		}
 
-		for (int i = 1; i < g[cur_v].size(); ++i) {
-			if (visited[i]) continue;
-			if (g[cur_v][i]) {
-				if (answer[cur_v] + g[cur_v][i] < answer[i]) {
-					answer[i] = answer[cur_v] + g[cur_v][i];
-					s.insert(i);
-					visited[i] = true;
-				}
+		for (int i = 0; i < g[cur_v].size(); ++i) {
+			if (answer[cur_v] + g[cur_v][i].second < answer[g[cur_v][i].first]) {
+				answer[g[cur_v][i].first] = answer[cur_v] + g[cur_v][i].second;
+				q.push(make_pair(g[cur_v][i].first, answer[g[cur_v][i].first]));
 			}
 		}
 	}
@@ -52,24 +59,12 @@ int main() {
 	return 0;
 }
 
-int get_next_v(const vector<int> &answer, const set<int> &s) {
-	int next_v;
-	int min = 987654321;
-
-	for (auto itr = s.begin(); itr != s.end(); ++itr) {
-		if (answer[*itr] < min) {
-			min = answer[*itr];
-			next_v = *itr;
-		}
-	}
-
-	return next_v;
-}
-
-void print(const vector<vector<int> > &v) {
-	for (auto itr = v.begin(); itr != v.end(); ++itr) {
+void print(const vector<vector<pair<int, char> > > &v) {
+	int i = 1;
+	for (auto itr = v.begin() + 1; itr != v.end(); ++itr) {
+		printf("%d: ", i++);
 		for (auto itr2 = itr->begin(); itr2 != itr->end(); ++itr2) {
-			printf("%d, ", *itr2);
+			printf("i:%d value:%d, ", itr2->first, itr2->second);
 		}
 		printf("\n");
 	}
