@@ -3,6 +3,8 @@
 #include <algorithm>
 using namespace std;
 
+int get_min_index(const vector<int> &v, int prev);
+
 int main() {
 	int n ,answer, next;
 	scanf("%d", &n);
@@ -20,14 +22,34 @@ int main() {
 	prev[0] = 0;
 	prev[1] = 1;
 	prev[2] = 2;
+
 	for (int i = 1; i < n; ++i) {
-		a[i][0] = a[i - 1][0] + min(v[i][1], v[i][2]);
-		a[i][1] = a[i - 1][1] + min(v[i][0], v[i][2]);
-		a[i][2] = a[i - 1][2] + min(v[i][0], v[i][1]);
+		for (int j = 0; j < 3; ++j) {
+			int next_j = get_min_index(v[i], prev[j]);
+			a[i][j] = a[i - 1][j] + v[i][next_j];
+			prev[j] = next_j;
+		}
 	}
+
 	answer = min(a[a.size() - 1][0], a[a.size() - 1][1]);
 	answer = min(answer, a[a.size() - 1][2]);
 	printf("%d\n", answer);
 
 	return 0;
+}
+
+int get_min_index(const vector<int> &v, int prev) {
+	int min = 987654321;
+	int min_index = -1;
+
+	for (int i = 0; i < v.size(); ++i) {
+		if (i == prev) continue;
+
+		if (v[i] < min) {
+			min = v[i];
+			min_index = i;
+		}
+	}
+
+	return min_index;
 }
