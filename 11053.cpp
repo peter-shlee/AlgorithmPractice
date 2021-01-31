@@ -26,6 +26,7 @@ int main() {
 	for (int i = 1; i < n; ++i) {
 		for (int j = 0; j + i < n; ++j) {
 			for (int k = j; k < j + i; ++k) {
+				if (dp[j][k].size() + dp[k + 1][j + i].size() < dp[j][j + i].size()) continue;
 				if (can_merge(dp[j][k], dp[k + 1][j + i])) {
 					vector<int> merged_vector = merge_vector(dp[j][k], dp[k + 1][j + i]);
 					dp[j][j + i] = get_large_vector(merged_vector, dp[j][j + i]);
@@ -33,6 +34,7 @@ int main() {
 					vector<int> large_vector = get_large_vector(dp[j][k], dp[k + 1][j + i]);
 					dp[j][j + i] = get_large_vector(large_vector, dp[j][j + i]);
 				}
+				if (dp[j][j + 1].size() == i + 1) break;
 			}
 		}
 	}
