@@ -12,6 +12,8 @@ for _ in range(t):
         applicants.append(applicant)
 
     applicants.sort()
+    print(applicants)
+    input()
 
     interview_grade_min = applicants[0][1]
     for _, interview_grade in applicants[1:]:

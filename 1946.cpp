@@ -28,12 +28,13 @@ int main() {
 			applicants.push_back(make_pair(document_grade, interview_grade));
         }
 
-//		for (int j = 0; j < applicants.size(); ++j) {
-//			printf("%d, %d\n", applicants[j].first, applicants[j].second);
-//		}
 
 		sort(applicants.begin(), applicants.end(), compare); // 서류 심사 등수 기준으로 sorting
 
+		for (int j = 0; j < applicants.size(); ++j) {
+			printf("%d, %d\n", applicants[j].first, applicants[j].second);
+		}
+		
 		int min_interview_score = applicants[0].second; // 지금까지 나왔던 면접 등수 중 가장 높은 등수 저장
 		for (int j = 1; j < applicants.size(); ++j) {
 			if (min_interview_score < applicants[j].second) { // 지금까지 나왔던 등수보다 더 높은 등수여야만 합격 가능
