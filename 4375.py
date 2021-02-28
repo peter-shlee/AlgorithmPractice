@@ -6,6 +6,12 @@ while True:
         n = int(input())
     except Exception:
         break
+    
+    answer = 1
+    r = 1 % n
+    while r != 0:
+        r = (r * 10 + 1) % n
+        answer += 1
 
-    print(n)
-
+    print(answer)
+    
