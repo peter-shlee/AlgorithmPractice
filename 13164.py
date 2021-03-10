@@ -17,5 +17,7 @@ for i in range(len(cut_idx)):
     end = cut_idx[i]
     answer += kids[end] - kids[start]
     start = end + 1
+end = len(kids) - 1
+answer += kids[end] - kids[start]
 
 print(answer)
