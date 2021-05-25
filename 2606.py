@@ -1,21 +1,21 @@
 # 바이러스
 # https://www.acmicpc.net/problem/2606
 
-def dfs(graph, infected, current_node):
-    infected[current_node] = True
+def dfs(graph, visited, current_node):
+    visited[current_node] = True
 
     for next_node in graph[current_node]:
-        if infected[next_node] == False:
-            dfs(graph, infected, next_node)
+        if visited[next_node] == False:
+            dfs(graph, visited, next_node)
 
 
-num_of_computers = int(input())
+num_of_nodes = int(input())
 num_of_edges = int(input())
 
-infected = [False] * (num_of_computers + 1)
+visited = [False] * (num_of_nodes + 1)
 
 graph = [[]]
-for _ in range(num_of_computers):
+for _ in range(num_of_nodes):
     graph.append([])
 
 for _ in range(num_of_edges):
@@ -23,5 +23,5 @@ for _ in range(num_of_edges):
     graph[a].append(b)
     graph[b].append(a)
 
-dfs(graph, infected, 1)
-print(infected.count(True) - 1)
+dfs(graph, visited, 1)
+print(visited.count(True) - 1)
