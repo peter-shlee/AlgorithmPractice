@@ -3,7 +3,7 @@
 
 import sys
 
-imput = sys.stdin.readline
+input = sys.stdin.readline
 
 n, r, c = map(int, input().split())
 answer = 0
