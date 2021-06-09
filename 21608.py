@@ -72,8 +72,7 @@ num_of_students = n * n
 
 best_friends = defaultdict(list)
 for _ in range(num_of_students):
-    s, f1, f2, f3, f4 = map(int, input().split())
-    friends = [f1, f2, f3, f4]
+    s, *friends = map(int, input().split())
     best_friends[s] = friends
     i, j = find_seat(classroom, friends)
     classroom[i][j] = s
