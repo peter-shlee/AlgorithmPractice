@@ -23,39 +23,43 @@ def is_valid_index(board, r, c):
 
     return True
 
-t = int(input())
 
-for _ in range(t):
+def solve():
     l = int(input())
     s_c, s_r = map(int, input().split())
     d_c, d_r = map(int, input().split())
 
     if s_c == d_c and s_r == d_r:
-        print(0)
-        continue
+        return 0
 
-    board = [[0] * l for __ in range(l)]
-    board[s_r][s_c] = 1
+    board = [[-1] * l for __ in range(l)]
+    board[s_r][s_c] = 0
 
     answer = 0
     queue = deque()
-    queue.append((s_r, s_c, 0))
+    queue.append((s_r, s_c))
 
     while len(queue) > 0:
-        cur_r, cur_c, cur_count = queue.popleft()
+        cur_r, cur_c = queue.popleft()
 
         for adjacent_index in adjacent_indices:
             next_r = cur_r + adjacent_index[0]
             next_c = cur_c + adjacent_index[1]
 
             if is_valid_index(board, next_r, next_c):
-                if board[next_r][next_c] == 0:
+                if board[next_r][next_c] == -1:
+                    board[next_r][next_c] = board[cur_r][cur_c] + 1
+
                     if next_r == d_r and next_c == d_c:
-                        answer = cur_count + 1
-                        queue = []
-                        break
+                        return board[next_r][next_c]
 
-                    board[next_r][next_c] = 1
-                    queue.append((next_r, next_c, cur_count + 1))
+                    queue.append((next_r, next_c))
 
+    print(answer)
+
+
+t = int(input())
+
+for _ in range(t):
+    answer = solve()
     print(answer)
