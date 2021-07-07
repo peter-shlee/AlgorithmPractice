@@ -1,9 +1,6 @@
 # 나이트의 이동
 # https://www.acmicpc.net/problem/7562
 
-# pypy3 -> 통과
-# python3 -> 시간초과
-
 import sys
 from collections import deque
 
