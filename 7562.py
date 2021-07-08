@@ -8,17 +8,17 @@ input = sys.stdin.readline
 adjacent_indices = ((-2, -1), (-1, -2), (1, -2), (2, -1), (-2, 1), (-1, 2), (1, 2), (2, 1))
 
 
-def is_valid_index(board, r, c):
-    if r < 0 or c < 0:
-        return False
+# def is_valid_index(board, r, c):
+#     if r < 0 or c < 0:
+#         return False
 
-    if len(board) <= r:
-        return False
+#     if len(board) <= r:
+#         return False
 
-    if len(board[r]) <= c:
-        return False
+#     if len(board[r]) <= c:
+#         return False
 
-    return True
+#     return True
 
 
 def solve():
@@ -43,7 +43,7 @@ def solve():
             next_r = cur_r + adjacent_index[0]
             next_c = cur_c + adjacent_index[1]
 
-            if is_valid_index(board, next_r, next_c):
+            if 0 <= next_r < l and 0 <= next_c < l:
                 if board[next_r][next_c] == -1:
                     board[next_r][next_c] = board[cur_r][cur_c] + 1
 
