@@ -1,5 +1,3 @@
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import kotlin.math.max
 
 // 트리의 독립집합
@@ -26,22 +24,26 @@ fun main() {
         }
     }
 
-//    val group = mutableSetOf<Int>()
-//    path(graph, weights, start, dp, group, -1, skipFlag)
-//
-    println(answer)
-//    println(group.toString())
-//    for (d in dp) {
-//        println(d.contentToString())
-//    }
+    val group = mutableSetOf<Int>()
+    path(graph, weights, start, dp, group, -1, skipFlag)
+
+    val writer = System.out.bufferedWriter()
+    writer.write("$answer\n")
+    val sortedGroup = group.toSortedSet()
+    for (edge in sortedGroup) {
+        writer.write("$edge ")
+    }
+    writer.write("\n")
+    writer.flush()
 }
 
 fun input(): Pair<IntArray, Map<Int, MutableSet<Int>>> {
-    val reader = BufferedReader(InputStreamReader(System.`in`))
-    val n = reader.readLine().toInt()
+    val reader = System.`in`.bufferedReader()
+    val delimiter = "\\s+".toRegex()
+    val n = reader.readLine().trim().split(delimiter)[0].toInt()
 
     val weights = IntArray(n + 1) { 0 }
-    reader.readLine().split(" ").mapIndexed { index, s -> weights[index] = s.toInt() }
+    reader.readLine().trim().split(delimiter).mapIndexed { index, s -> weights[index + 1] = s.toInt() }
 
     val graph = mutableMapOf<Int, MutableSet<Int>>()
     var edge: String?
@@ -49,7 +51,7 @@ fun input(): Pair<IntArray, Map<Int, MutableSet<Int>>> {
         edge = reader.readLine()
         if (edge == null) break
 
-        val v = edge.split(" ").map { it.toInt() }.toIntArray()
+        val v = edge.trim().split(delimiter).map { it.toInt() }.toIntArray()
 
         if (graph[v[0]] == null) {
             graph[v[0]] = mutableSetOf()
@@ -65,66 +67,68 @@ fun input(): Pair<IntArray, Map<Int, MutableSet<Int>>> {
     return Pair(weights, graph)
 }
 
-fun solve(graph: Map<Int, MutableSet<Int>>, weights: IntArray, edge: Int, dp: List<IntArray>, prev:Int, skipFlag: Int): Int {
-    if (graph[edge] == null) return 0
-    if (graph[edge]?.size == 0) return 0
-
+fun solve(
+    graph: Map<Int, MutableSet<Int>>,
+    weights: IntArray,
+    edge: Int,
+    dp: List<IntArray>,
+    prev: Int,
+    skipFlag: Int
+): Int {
     if (dp[skipFlag][edge] != -1) return dp[skipFlag][edge]
 
-    var maxValue = if (skipFlag == 1) {
-        0
-    } else {
-        weights[edge]
+    var nonSkipMaxValue = 0
+    if (skipFlag == 0) {
+        nonSkipMaxValue = weights[edge]
+        for (nextEdge in graph[edge]!!) {
+            if (nextEdge == prev) continue
+            nonSkipMaxValue += solve(graph, weights, nextEdge, dp, edge, 1)
+        }
     }
 
+    var skipMaxValue = 0
     for (nextEdge in graph[edge]!!) {
         if (nextEdge == prev) continue
-
-        if (skipFlag == 0) {
-            maxValue = max(maxValue, solve(graph, weights, edge, dp, edge, 1) + weights[edge])
-        }
-
-        maxValue = max(maxValue, solve(graph, weights, edge, dp, edge, 0))
+        skipMaxValue += solve(graph, weights, nextEdge, dp, edge, 0)
     }
-    dp[skipFlag][edge] = maxValue
+
+    dp[skipFlag][edge] = max(skipMaxValue, nonSkipMaxValue)
 
     return dp[skipFlag][edge]
 }
 
-fun path(graph: Map<Int, MutableSet<Int>>, weights: IntArray, edge: Int, dp: List<IntArray>, group: MutableSet<Int>, prev:Int, skipFlag: Int) {
-    var next = -1
-    var tmpValue: Int
-    var nextSkipFlag = 0
+fun path(
+    graph: Map<Int, MutableSet<Int>>,
+    weights: IntArray,
+    edge: Int,
+    dp: List<IntArray>,
+    group: MutableSet<Int>,
+    prev: Int,
+    skipFlag: Int
+) {
+    var nonSkipMaxValue = 0
+    if (skipFlag == 0) {
+        nonSkipMaxValue = weights[edge]
+        for (nextEdge in graph[edge]!!) {
+            if (nextEdge == prev) continue
+            nonSkipMaxValue += solve(graph, weights, nextEdge, dp, edge, 1)
+        }
+    }
 
-    if (graph[edge]?.size == 0) return
+    var skipMaxValue = 0
+    for (nextEdge in graph[edge]!!) {
+        if (nextEdge == prev) continue
+        skipMaxValue += solve(graph, weights, nextEdge, dp, edge, 0)
+    }
 
-    var maxValue = if (skipFlag == 1) {
-        0
-    } else {
-        weights[edge]
+    var nextFlag = 0
+    if (nonSkipMaxValue > skipMaxValue) {
+        group.add(edge)
+        nextFlag = 1
     }
 
     for (nextEdge in graph[edge]!!) {
         if (nextEdge == prev) continue
-
-        if (skipFlag == 0) {
-            tmpValue = solve(graph, weights, edge, dp, edge, 1) + weights[edge]
-            if (tmpValue > maxValue) {
-                maxValue = tmpValue
-                nextSkipFlag = 1
-                next = nextEdge
-            }
-        }
-
-        tmpValue = solve(graph, weights, edge, dp, edge, 0)
-        if (tmpValue > maxValue) {
-            maxValue = tmpValue
-            nextSkipFlag = 0
-            next = nextEdge
-        }
+        path(graph, weights, nextEdge, dp, group, edge, nextFlag)
     }
-
-    if (next == -1) return
-
-    path(graph, weights, next, dp, group, edge, nextSkipFlag)
 }
