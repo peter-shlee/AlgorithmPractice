@@ -1,4 +1,5 @@
 import java.util.*
+import kotlin.math.max
 import kotlin.math.min
 
 // 빗물
@@ -22,18 +23,18 @@ fun input() {
 }
 
 fun solve(start: Int, end: Int): Int {
-    var nextIndex = -1
+    var maxIndex = -1
+    var maxValue = -1
 
     for (i in start + 1 until end) {
-        if (blocks[i] >= blocks[start] || blocks[i] >= blocks[end]) {
-            nextIndex = i
-            break
+        if (maxValue < blocks[i]) {
+            maxIndex = i
+            maxValue = blocks[i]
         }
     }
 
-    if (nextIndex != -1) {
-        println(nextIndex)
-        return solve(start, nextIndex) + solve(nextIndex, end)
+    if (blocks[start] <= maxValue || blocks[end] <= maxValue) {
+        return solve(start, maxIndex) + solve(maxIndex, end)
     }
 
     val height = min(blocks[start], blocks[end])
