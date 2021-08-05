@@ -1,9 +1,11 @@
 import java.util.*
 
+// 최소 스패닝 트리
+// https://www.acmicpc.net/status?user_id=shlee4290&problem_id=1197&from_mine=1
+
 val comparator = Comparator<Triple<Int, Int, Int>> { x, y -> x.first - y.first}
 val heap = PriorityQueue(comparator)
-val visited = BooleanArray(10000) { false }
-val graph = List(10000) { mutableSetOf<Int>()}
+val parent = IntArray(10000) { it }
 
 fun main() {
     input()
@@ -24,29 +26,19 @@ fun solve(): Int {
 
     while(heap.isNotEmpty()) {
         val (c, a, b) = heap.poll()
-        if (visited[a] && visited[b]) {
-            println("check")
-            if (loopCheck(a, b, mutableSetOf())) continue
-            println("end")
-        }
-        println("$c $a $b")
+        val parentOfA = findParent(a)
+        val parentOfB = findParent(b)
+        if (parentOfA == parentOfB) continue
         answer += c
-        visited[a] = true
-        visited[b] = true
-        graph[a].add(b)
-        graph[b].add(a)
+        parent[parentOfB] = parentOfA
     }
 
     return answer
 }
 
-fun loopCheck(current: Int, prev: Int, loopVisited: MutableSet<Int>): Boolean {
-    loopVisited.add(current)
-    for (next in graph[current]) {
-        if (prev == next) continue
-        if (loopVisited.contains(next)) return true
-        if (loopCheck(next, current, loopVisited)) return true
-    }
+fun findParent(i: Int): Int {
+    if (i == parent[i]) return i
 
-    return false
+    parent[i] = findParent(parent[i])
+    return parent[i]
 }
